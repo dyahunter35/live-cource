@@ -17,6 +17,8 @@ class LiveCoursesIndex extends Component
 
     public string $filter = 'all';
 
+    public string $search = '';
+
     public function setFilter(string $filter): void
     {
         $allowed = [CourseStatus::values(), 'all'];
