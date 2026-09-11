@@ -6,9 +6,12 @@
 </head>
 
 <body>
-    <div class="live-layout">
+    <div class="live-layout" x-data="{ sidebarOpen: false }">
+        {{-- Mobile Backdrop --}}
+        <div class="sidebar-backdrop" :class="{ 'active': sidebarOpen }" @click="sidebarOpen = false"></div>
+
         {{-- Sidebar --}}
-        <aside class="live-sidebar">
+        <aside class="live-sidebar" :class="{ 'open': sidebarOpen }">
             {{-- Logo --}}
             <div class="sidebar-logo">
                 <div class="sidebar-logo-icon">
@@ -20,6 +23,7 @@
                     <span class="sidebar-logo-title">منصة منيسوتا للتدريب</span>
                     <span class="sidebar-logo-sub">Minnesota Training & Development Platform</span>
                 </div>
+                <button type="button" class="sidebar-close-btn" @click="sidebarOpen = false" aria-label="إغلاق">✕</button>
             </div>
 
             {{-- Navigation --}}
@@ -114,19 +118,30 @@
         <div class="live-main">
             {{-- Header --}}
             <header class="live-header">
-                {{-- Search --}}
-                <div class="header-search">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="11" cy="11" r="8" />
-                        <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                    </svg>
-                    <input
-                        type="text"
-                        x-data
-                        x-on:input.debounce.300ms="Livewire.dispatch('search', { value: $event.target.value })"
-                        placeholder="ابحث في دوراتك..."
-                    >
+                <div class="header-left">
+                    {{-- Hamburger Menu Button --}}
+                    <button type="button" class="hamburger-btn" @click="sidebarOpen = !sidebarOpen" aria-label="القائمة الرئيسية">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                    </button>
+
+                    {{-- Search --}}
+                    <div class="header-search">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8" />
+                            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                        </svg>
+                        <input
+                            type="text"
+                            x-data
+                            x-on:input.debounce.300ms="Livewire.dispatch('search', { value: $event.target.value })"
+                            placeholder="ابحث في دوراتك..."
+                        >
+                    </div>
                 </div>
 
                 {{-- Right side --}}
