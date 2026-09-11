@@ -52,7 +52,7 @@
 }
 
 [data-flux-label] {
-    @apply  !mb-0 !leading-tight;
+    @apply !mb-0 !leading-tight;
 }
 
 input:focus[data-flux-control],
@@ -69,6 +69,7 @@ select:focus[data-flux-control] {
     from {
         opacity: 0;
     }
+
     to {
         opacity: 1;
     }
@@ -454,10 +455,11 @@ select:focus[data-flux-control] {
 }
 
 @media (max-width: 1024px) {
+
     /* التأكد من أن المساحة الكلية تشمل الشاشة كاملة بدون حجز مكان للشريط */
     .live-main {
         margin-right: 0 !important;
-        width: 100% !important;
+        /* width: 100% !important; */
     }
 
     .live-sidebar {
@@ -736,12 +738,29 @@ select:focus[data-flux-control] {
     font-size: 20px;
 }
 
-.course-icon-blue   { background: #eef2ff; }
-.course-icon-green  { background: #f0fdf4; }
-.course-icon-orange { background: #fff7ed; }
-.course-icon-purple { background: #faf5ff; }
-.course-icon-yellow { background: #fefce8; }
-.course-icon-teal   { background: #f0fdfa; }
+.course-icon-blue {
+    background: #eef2ff;
+}
+
+.course-icon-green {
+    background: #f0fdf4;
+}
+
+.course-icon-orange {
+    background: #fff7ed;
+}
+
+.course-icon-purple {
+    background: #faf5ff;
+}
+
+.course-icon-yellow {
+    background: #fefce8;
+}
+
+.course-icon-teal {
+    background: #f0fdfa;
+}
 
 .course-name {
     font-size: 14px;
@@ -863,11 +882,35 @@ select:focus[data-flux-control] {
     border: 1px solid transparent;
 }
 
-.status-live         { background: #fef2f2; color: #dc2626; border-color: #fecaca; }
-.status-upcoming     { background: #eff6ff; color: #2563eb; border-color: #bfdbfe; }
-.status-completed    { background: #f0fdf4; color: #16a34a; border-color: #bbf7d0; }
-.status-not-started  { background: #fff7ed; color: #ea580c; border-color: #fed7aa; }
-.status-pending      { background: #fffbeb; color: #d97706; border-color: #fde68a; }
+.status-live {
+    background: #fef2f2;
+    color: #dc2626;
+    border-color: #fecaca;
+}
+
+.status-upcoming {
+    background: #eff6ff;
+    color: #2563eb;
+    border-color: #bfdbfe;
+}
+
+.status-completed {
+    background: #f0fdf4;
+    color: #16a34a;
+    border-color: #bbf7d0;
+}
+
+.status-not-started {
+    background: #fff7ed;
+    color: #ea580c;
+    border-color: #fed7aa;
+}
+
+.status-pending {
+    background: #fffbeb;
+    color: #d97706;
+    border-color: #fde68a;
+}
 
 .status-pulse {
     width: 7px;
@@ -878,8 +921,17 @@ select:focus[data-flux-control] {
 }
 
 @keyframes status-pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50%       { opacity: 0.5; transform: scale(1.3); }
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.5;
+        transform: scale(1.3);
+    }
 }
 
 .status-sublabel {
@@ -918,7 +970,10 @@ select:focus[data-flux-control] {
     box-shadow: 0 6px 16px rgba(45, 95, 183, 0.4);
 }
 
-.action-btn-join svg { width: 15px; height: 15px; }
+.action-btn-join svg {
+    width: 15px;
+    height: 15px;
+}
 
 .action-btn-watch {
     background: #f5f7fa;
@@ -931,7 +986,10 @@ select:focus[data-flux-control] {
     color: #2d5fb7;
 }
 
-.action-btn-watch svg { width: 14px; height: 14px; }
+.action-btn-watch svg {
+    width: 14px;
+    height: 14px;
+}
 
 .action-btn-pay {
     background: linear-gradient(135deg, #f59e0b, #d97706);
@@ -939,8 +997,14 @@ select:focus[data-flux-control] {
     box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
 }
 
-.action-btn-pay:hover { transform: translateY(-1px); }
-.action-btn-pay svg   { width: 14px; height: 14px; }
+.action-btn-pay:hover {
+    transform: translateY(-1px);
+}
+
+.action-btn-pay svg {
+    width: 14px;
+    height: 14px;
+}
 
 .action-dash {
     font-size: 20px;
@@ -964,7 +1028,9 @@ select:focus[data-flux-control] {
     color: #5a6a7e;
 }
 
-.total-count span { color: #2d5fb7; }
+.total-count span {
+    color: #2d5fb7;
+}
 
 .pagination {
     display: flex;
@@ -989,8 +1055,14 @@ select:focus[data-flux-control] {
     font-family: 'Tajawal', sans-serif;
 }
 
-.page-btn:hover  { background: #f0f4f8; }
-.page-btn svg    { width: 14px; height: 14px; }
+.page-btn:hover {
+    background: #f0f4f8;
+}
+
+.page-btn svg {
+    width: 14px;
+    height: 14px;
+}
 
 .page-btn.active {
     background: #2d5fb7;
@@ -1014,8 +1086,13 @@ select:focus[data-flux-control] {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to   { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 .modal-card {
@@ -1031,8 +1108,15 @@ select:focus[data-flux-control] {
 }
 
 @keyframes slideUp {
-    from { opacity: 0; transform: translateY(24px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .modal-header {
@@ -1059,7 +1143,11 @@ select:focus[data-flux-control] {
     justify-content: center;
 }
 
-.modal-title-icon svg { width: 20px; height: 20px; color: #2d5fb7; }
+.modal-title-icon svg {
+    width: 20px;
+    height: 20px;
+    color: #2d5fb7;
+}
 
 .modal-title {
     font-size: 17px;
@@ -1090,7 +1178,9 @@ select:focus[data-flux-control] {
     border-color: #fecaca;
 }
 
-.modal-body { padding: 24px 26px; }
+.modal-body {
+    padding: 24px 26px;
+}
 
 .modal-course-top {
     display: flex;
@@ -1098,7 +1188,9 @@ select:focus[data-flux-control] {
     margin-bottom: 22px;
 }
 
-.modal-course-info { flex: 1; }
+.modal-course-info {
+    flex: 1;
+}
 
 .modal-course-name {
     font-size: 22px;
@@ -1174,7 +1266,9 @@ select:focus[data-flux-control] {
     gap: 12px;
 }
 
-.modal-info-card.full-width { grid-column: 1 / -1; }
+.modal-info-card.full-width {
+    grid-column: 1 / -1;
+}
 
 .modal-info-label {
     font-size: 11px;
@@ -1205,13 +1299,35 @@ select:focus[data-flux-control] {
     flex-shrink: 0;
 }
 
-.modal-info-icon svg { width: 22px; height: 22px; }
+.modal-info-icon svg {
+    width: 22px;
+    height: 22px;
+}
 
-.icon-blue   { background: #eef2ff; color: #6366f1; }
-.icon-green  { background: #f0fdf4; color: #22c55e; }
-.icon-purple { background: #faf5ff; color: #a855f7; }
-.icon-yellow { background: #fefce8; color: #eab308; }
-.icon-gray   { background: #f1f5f9; color: #64748b; }
+.icon-blue {
+    background: #eef2ff;
+    color: #6366f1;
+}
+
+.icon-green {
+    background: #f0fdf4;
+    color: #22c55e;
+}
+
+.icon-purple {
+    background: #faf5ff;
+    color: #a855f7;
+}
+
+.icon-yellow {
+    background: #fefce8;
+    color: #eab308;
+}
+
+.icon-gray {
+    background: #f1f5f9;
+    color: #64748b;
+}
 
 /* ===== MODAL STATUS SECTION ===== */
 .modal-status-section {
@@ -1226,7 +1342,9 @@ select:focus[data-flux-control] {
     gap: 12px;
 }
 
-.modal-status-content { flex: 1; }
+.modal-status-content {
+    flex: 1;
+}
 
 .modal-status-label {
     font-size: 11px;
@@ -1275,7 +1393,10 @@ select:focus[data-flux-control] {
     color: #dc2626;
 }
 
-.modal-btn-pdf svg { width: 28px; height: 28px; }
+.modal-btn-pdf svg {
+    width: 28px;
+    height: 28px;
+}
 
 .modal-btn-whatsapp {
     flex: 1;
@@ -1306,11 +1427,26 @@ select:focus[data-flux-control] {
     gap: 10px;
 }
 
-.modal-btn-whatsapp svg { width: 24px; height: 24px; }
+.modal-btn-whatsapp svg {
+    width: 24px;
+    height: 24px;
+}
 
-.modal-btn-whatsapp-title { font-size: 13px; font-weight: 700; }
-.modal-btn-whatsapp-sub   { font-size: 11px; opacity: 0.85; font-weight: 400; }
-.modal-btn-arrow          { font-size: 18px; opacity: 0.8; }
+.modal-btn-whatsapp-title {
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.modal-btn-whatsapp-sub {
+    font-size: 11px;
+    opacity: 0.85;
+    font-weight: 400;
+}
+
+.modal-btn-arrow {
+    font-size: 18px;
+    opacity: 0.8;
+}
 
 /* ===== EMPTY STATE ===== */
 .empty-state {
