@@ -1,12 +1,16 @@
 {
     "agents": [
         "claude_code",
-        "opencode"
+        "opencode",
+        "zed"
     ],
     "cloud": true,
     "guidelines": true,
     "mcp": true,
     "nightwatch": false,
+    "packages": [
+        "livewire/blaze"
+    ],
     "sail": false,
     "skills": [
         "infer-conventions",
@@ -16,6 +20,7 @@
         "testing-best-practices",
         "fluxui-development",
         "livewire-development",
-        "tailwindcss-development"
+        "tailwindcss-development",
+        "blaze-optimize"
     ]
 }

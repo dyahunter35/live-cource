@@ -1,193 +1,25 @@
-# خطة تنفيذ مشروع صفحة الدورات المباشرة والنوافذ المنبثقة (Live Courses & Modal Popup) باستخدام Laravel و Tailwind CSS v4
-
-هذه الخطة مصممة خصيصاً لتوجيه أداة التطوير الذكي (مثل **OpenCode** أو أي مساعد برمجي) لتنفيذ واجهة "منصة منيسوتا للتدريب والتطوير" بكفاءة عالية، مع الاعتماد على **PHP Enums** لإدارة الحالات وتصميم الواجهات باستخدام Tailwind CSS v4.
-
----
-
-## 1. المتطلبات التقنية والبيئة (Tech Stack)
-* **Backend**: Laravel 11+
-* **State Management**: PHP Enums (لإدارة حالات الدورات بشكل آمن ونظيف).
-* **Reactive Layer**: Livewire v3 (لضمان فتح الـ Popup وتحديث الجدول بدون إعادة تحميل الصفحة).
-* **Styling**: Tailwind CSS v4 (مع استخدام الألوان والزوايا `rounded-2xl` و `rounded-3xl` المطابقة للتصميم).
-
----
-
-## 2. تعريف الـ Enum الخاص بحالات الدورات (CourseStatus Enum)
-قم بإنشاء الملف في `app/Enums/CourseStatus.php`:
-
-```php
-namespace App\Enums;
-
-enum CourseStatus: string
-{
-    case LIVE = 'live';
-    case UPCOMING = 'upcoming';
-    case COMPLETED = 'completed';
-    case NOT_STARTED = 'not_started';
-    case PENDING_PAYMENT = 'pending_payment';
-
-    public function label(): string
-    {
-        return match($this) {
-            self::LIVE => 'مباشر الآن',
-            self::UPCOMING => 'قادمة',
-            self::COMPLETED => 'مكتملة',
-            self::NOT_STARTED => 'لم تبدأ بعد',
-            self::PENDING_PAYMENT => 'بانتظار السداد',
-        };
-    }
-
-    public function badgeClasses(): string
-    {
-        return match($this) {
-            self::LIVE => 'bg-red-50 text-red-600 border-red-100',
-            self::UPCOMING => 'bg-blue-50 text-blue-600 border-blue-100',
-            self::COMPLETED => 'bg-green-50 text-green-600 border-green-100',
-            self::NOT_STARTED => 'bg-orange-50 text-orange-600 border-orange-100',
-            self::PENDING_PAYMENT => 'bg-amber-50 text-amber-600 border-amber-100',
-        };
-    }
-}
-```
-
----
-
-## 3. هيكلة قاعدة البيانات (Database Schema & Model)
-
-### جدول `courses` (Migration)
-```php
-Schema::create('courses', function (Blueprint $table) {
-    $table->id();
-    $table->string('title');
-    $table->string('instructor_name');
-    $table->string('type')->default('free'); // free or paid
-    $table->decimal('price', 8, 2)->nullable();
-    $table->string('status'); // Will be cast to CourseStatus Enum
-    $table->string('status_label')->nullable(); // e.g. "متبقي 1 يوم و 11 ساعة"
-    $table->string('next_session_title')->nullable();
-    $table->string('start_date')->nullable();
-    $table->string('time_range')->nullable();
-    $table->string('timezone')->default('بتوقيت مكة المكرمة');
-    $table->timestamps();
-});
-```
-
-### نموذج `Course` Model
-```php
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Model;
-use App\Enums\CourseStatus;
-
-class Course extends Model
-{
-    protected $guarded = [];
-
-    protected $casts = [
-        'status' => CourseStatus::class,
-    ];
-}
-```
-
----
-
-## 4. مكون Livewire (Backend Controller & State)
-
-```bash
-php artisan make:livewire Student/LiveCoursesIndex
-```
-
-**ملف الكلاس `app/Http/Livewire/Student/LiveCoursesIndex.php`:**
-```php
-namespace App\Http\Livewire\Student;
-
-use Livewire\Component;
-use App\Models\Course;
-use App\Enums\CourseStatus;
-
-class LiveCoursesIndex extends Component
-{
-    public $selectedCourse = null;
-    public $showModal = false;
-    public $filter = 'all';
-
-    public function loadCourseDetails($courseId)
-    {
-        $this->selectedCourse = Course::find($courseId);
-        $this->showModal = true;
-    }
-
-    public function closeModal()
-    {
-        $this->showModal = false;
-        $this->selectedCourse = null;
-    }
-
-    public function setFilter($filterType)
-    {
-        $this->filter = $filterType;
-    }
-
-    public function render()
-    {
-        $query = Course::query();
-        
-        if ($this->filter !== 'all') {
-            $query->where('status', $this->filter);
-        }
-
-        $courses = $query->get();
-        
-        $counts = [
-            'all' => Course::count(),
-            'upcoming' => Course::where('status', CourseStatus::UPCOMING)->count(),
-            'live' => Course::where('status', CourseStatus::LIVE)->count(),
-            'completed' => Course::where('status', CourseStatus::COMPLETED)->count(),
-            'not_started' => Course::where('status', CourseStatus::NOT_STARTED)->count(),
-        ];
-
-        return view('livewire.student.live-courses-index', compact('courses', 'counts'));
-    }
-}
-```
-
----
-
-## 5. تصميم الواجهة (Blade View & Tailwind CSS v4)
-
-**ملف العرض `resources/views/livewire/student/live-courses-index.blade.php`:**
-
-```html
-<div class="p-6 bg-gray-50/50 min-h-screen font-sans text-right" dir="rtl">
-    
+<div class="p-6 bg-gray-50/50 min-h-screen font-sans text-gray-900">
     <!-- الترويسة وأزرار التصفية -->
-    <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div class="max-w-6xl mx-auto mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
             <h1 class="text-2xl font-bold text-gray-800">الدورات المباشرة</h1>
             <p class="text-sm text-gray-500 mt-1">تابع دوراتك وجدول جلساتها بكل سهولة</p>
         </div>
 
         <div class="flex flex-wrap items-center gap-2 bg-white p-1.5 rounded-2xl shadow-sm border border-gray-100">
-            <button wire:click="setFilter('all')" class="px-4 py-2 rounded-xl text-sm font-medium transition {{ $filter === 'all' ? 'bg-blue-600 text-white shadow-md' : 'text-gray-600 hover:bg-gray-100' }}">
-                الكل ({{ $counts['all'] }})
-            </button>
-            <button wire:click="setFilter('upcoming')" class="px-4 py-2 rounded-xl text-sm font-medium transition {{ $filter === 'upcoming' ? 'bg-blue-600 text-white shadow-md' : 'text-gray-600 hover:bg-gray-100' }}">
-                القادمة ({{ $counts['upcoming'] }})
-            </button>
-            <button wire:click="setFilter('live')" class="px-4 py-2 rounded-xl text-sm font-medium transition {{ $filter === 'live' ? 'bg-blue-600 text-white shadow-md' : 'text-gray-600 hover:bg-gray-100' }}">
-                المباشرة الآن ({{ $counts['live'] }})
-            </button>
-            <button wire:click="setFilter('completed')" class="px-4 py-2 rounded-xl text-sm font-medium transition {{ $filter === 'completed' ? 'bg-blue-600 text-white shadow-md' : 'text-gray-600 hover:bg-gray-100' }}">
-                المكتملة ({{ $counts['completed'] }})
-            </button>
-            <button wire:click="setFilter('not_started')" class="px-4 py-2 rounded-xl text-sm font-medium transition {{ $filter === 'not_started' ? 'bg-blue-600 text-white shadow-md' : 'text-gray-600 hover:bg-gray-100' }}">
-                لم تبدأ بعد ({{ $counts['not_started'] }})
-            </button>
+            @foreach ($filters as $filterOption)
+                <button
+                    wire:click="setFilter('{{ $filterOption['key'] }}')"
+                    class="px-4 py-2 rounded-xl text-sm font-medium transition cursor-pointer {{ $filter === $filterOption['key'] ? 'bg-blue-600 text-white shadow-md' : 'text-gray-600 hover:bg-gray-100' }}"
+                >
+                    {{ $filterOption['label'] }} ({{ $filterOption['count'] }})
+                </button>
+            @endforeach
         </div>
     </div>
 
     <!-- جدول الدورات -->
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="max-w-6xl mx-auto bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-right border-collapse">
                 <thead>
@@ -201,14 +33,19 @@ class LiveCoursesIndex extends Component
                 </thead>
                 <tbody class="divide-y divide-gray-100 text-sm">
                     @forelse($courses as $course)
-                    <tr class="hover:bg-blue-50/20 transition-colors">
+                    <tr wire:key="course-{{ $course->id }}" class="hover:bg-blue-50/20 transition-colors">
                         <td class="p-4">
                             <div class="flex items-center gap-3">
                                 <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-lg shrink-0">🎓</div>
                                 <div>
                                     <div class="font-bold text-gray-900">{{ $course->title }}</div>
                                     <div class="text-xs text-gray-500 mt-0.5">
-                                        @if($course->price) مدفوعة - {{ $course->price }} دولار @else دورة حية مجانية @endif | د. {{ $course->instructor_name }}
+                                        @if ($course->price)
+                                            مدفوعة - {{ $course->price }} دولار
+                                        @else
+                                            دورة حية مجانية
+                                        @endif
+                                        | د. {{ $course->instructor_name }}
                                     </div>
                                     <button wire:click="loadCourseDetails({{ $course->id }})" class="text-blue-600 hover:text-blue-700 text-xs font-medium inline-flex items-center gap-1 mt-1 cursor-pointer">
                                         <span>التفاصيل</span> ℹ️
@@ -226,7 +63,7 @@ class LiveCoursesIndex extends Component
 
                         <td class="p-4">
                             <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border {{ $course->status->badgeClasses() }}">
-                                @if($course->status === App\Enums\CourseStatus::LIVE)
+                                @if ($course->status === App\Enums\CourseStatus::LIVE)
                                     <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
                                 @endif
                                 {{ $course->status->label() }}
@@ -235,10 +72,10 @@ class LiveCoursesIndex extends Component
                         </td>
 
                         <td class="p-4 text-center">
-                            @if($course->status === App\Enums\CourseStatus::LIVE)
-                                <a href="#" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-sm transition">انضم الآن 🎥</a>
-                            @elseif($course->status === App\Enums\CourseStatus::COMPLETED)
-                                <a href="#" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-xs font-medium transition">مشاهدة التسجيل</a>
+                            @if ($course->status === App\Enums\CourseStatus::LIVE)
+                                <a href="#" class="inline-block px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-sm transition">انضم الآن 🎥</a>
+                            @elseif ($course->status === App\Enums\CourseStatus::COMPLETED)
+                                <a href="#" class="inline-block px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-xs font-medium transition">مشاهدة التسجيل</a>
                             @else
                                 <span class="text-gray-300 font-bold">—</span>
                             @endif
@@ -253,8 +90,8 @@ class LiveCoursesIndex extends Component
     </div>
 
     <!-- نافذة الـ Popup المنبثقة (Modal) -->
-    @if($showModal && $selectedCourse)
-    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 overflow-y-auto animate-fade-in" wire:click.self="closeModal">
+    @if ($showModal && $selectedCourse)
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 overflow-y-auto animate-[fade-in_0.2s_ease-out]" wire:click.self="closeModal">
         <div class="bg-white w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden relative border border-gray-100 my-8">
             <button wire:click="closeModal" class="absolute top-5 left-5 w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 flex items-center justify-center transition cursor-pointer z-10">✕</button>
 
@@ -324,4 +161,3 @@ class LiveCoursesIndex extends Component
     </div>
     @endif
 </div>
-```

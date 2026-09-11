@@ -64,3 +64,12 @@ select:focus[data-flux-control] {
 /* \[:where(&)\]:size-4 {
     @apply size-4;
 } */
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
