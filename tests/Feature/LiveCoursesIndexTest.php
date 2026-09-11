@@ -2,12 +2,15 @@
 
 use App\Livewire\Student\LiveCoursesIndex;
 use App\Models\Course;
+use App\Models\User;
 use Livewire\Livewire;
 
 test('the live courses page renders the courses list', function () {
+    $user = User::factory()->create();
     Course::factory()->live()->create(['title' => 'دورة التعلم الإلكتروني']);
 
-    $this->get(route('live-courses'))
+    $this->actingAs($user)
+        ->get(route('live-courses'))
         ->assertOk()
         ->assertSee('الدورات المباشرة')
         ->assertSee('دورة التعلم الإلكتروني')
