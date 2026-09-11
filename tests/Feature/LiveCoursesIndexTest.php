@@ -31,6 +31,70 @@ test('setFilter ignores unknown filter values', function () {
         ->assertSet('filter', 'all');
 });
 
+test('searching by title shows only matching courses', function () {
+    Course::factory()->live()->create(['title' => 'دورة لارافيل متقدمة']);
+    Course::factory()->live()->create(['title' => 'دورة تصميم واجهات']);
+
+    Livewire::test(LiveCoursesIndex::class)
+        ->set('search', 'لارافيل')
+        ->assertSee('دورة لارافيل متقدمة')
+        ->assertDontSee('دورة تصميم واجهات');
+});
+
+test('searching by instructor name shows only their courses', function () {
+    Course::factory()->live()->create(['title' => 'دورة لارافيل', 'instructor_name' => 'أحمد الشمري']);
+    Course::factory()->live()->create(['title' => 'دورة فلو', 'instructor_name' => 'سارة العتيبي']);
+
+    Livewire::test(LiveCoursesIndex::class)
+        ->set('search', 'أحمد الشمري')
+        ->assertSee('دورة لارافيل')
+        ->assertDontSee('دورة فلو');
+});
+
+test('searching by next session title shows only matching courses', function () {
+    Course::factory()->live()->create(['title' => 'دورة لارافيل', 'next_session_title' => 'الجلسة الأولى: مقدمة في الدورة']);
+    Course::factory()->live()->create(['title' => 'دورة فلو', 'next_session_title' => 'جلسة التقييم النهائي']);
+
+    Livewire::test(LiveCoursesIndex::class)
+        ->set('search', 'مقدمة في الدورة')
+        ->assertSee('دورة لارافيل')
+        ->assertDontSee('دورة فلو');
+});
+
+test('search dispatches the search event from the header', function () {
+    Course::factory()->live()->create(['title' => 'دورة لارافيل متقدمة']);
+    Course::factory()->live()->create(['title' => 'دورة تصميم واجهات']);
+
+    Livewire::test(LiveCoursesIndex::class)
+        ->dispatch('search', value: 'لارافيل')
+        ->assertSee('دورة لارافيل متقدمة')
+        ->assertDontSee('دورة تصميم واجهات');
+});
+
+test('clearing the search restores all courses', function () {
+    Course::factory()->live()->create(['title' => 'دورة لارافيل متقدمة']);
+    Course::factory()->upcoming()->create(['title' => 'دورة تصميم واجهات']);
+
+    Livewire::test(LiveCoursesIndex::class)
+        ->set('search', 'لارافيل')
+        ->assertDontSee('دورة تصميم واجهات')
+        ->set('search', '')
+        ->assertSee('دورة لارافيل متقدمة')
+        ->assertSee('دورة تصميم واجهات');
+});
+
+test('search and status filter can be combined', function () {
+    Course::factory()->live()->create(['title' => 'دورة لارافيل المباشرة']);
+    Course::factory()->upcoming()->create(['title' => 'دورة لارافيل القادمة']);
+
+    Livewire::test(LiveCoursesIndex::class)
+        ->set('search', 'لارافيل')
+        ->call('setFilter', 'live')
+        ->assertSet('filter', 'live')
+        ->assertSee('دورة لارافيل المباشرة')
+        ->assertDontSee('دورة لارافيل القادمة');
+});
+
 test('the modal opens with the selected course details', function () {
     $course = Course::factory()->live()->create(['title' => 'دورة اختبار الواجهة']);
 

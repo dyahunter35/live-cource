@@ -6,6 +6,7 @@ use App\Enums\CourseStatus;
 use App\Models\Course;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class LiveCoursesIndex extends Component
@@ -21,9 +22,15 @@ class LiveCoursesIndex extends Component
 
     public function setFilter(string $filter): void
     {
-        $allowed = [CourseStatus::values(), 'all'];
+        $allowed = [...CourseStatus::values(), 'all'];
 
         $this->filter = in_array($filter, $allowed, true) ? $filter : 'all';
+    }
+
+    #[On('search')]
+    public function setSearch(string $value): void
+    {
+        $this->search = $value;
     }
 
     public function loadCourseDetails(int $courseId): void
@@ -67,6 +74,14 @@ class LiveCoursesIndex extends Component
 
         $courses = Course::query()
             ->when($this->filter !== 'all', fn ($query) => $query->where('status', CourseStatus::from($this->filter)))
+            ->when($this->search !== '', function ($query) {
+                $query->where(function ($subQuery) {
+                    $subQuery
+                        ->where('title', 'like', "%{$this->search}%")
+                        ->orWhere('instructor_name', 'like', "%{$this->search}%")
+                        ->orWhere('next_session_title', 'like', "%{$this->search}%");
+                });
+            })
             ->orderBy('id')
             ->get();
 
